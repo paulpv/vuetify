@@ -15,6 +15,8 @@ export default {
 
   methods: {
     genRipple (data = {}) {
+      if (!this.ripple) return null
+
       data.staticClass = 'v-input--selection-controls__ripple'
       data.directives = data.directives || []
       data.directives.push({
@@ -22,7 +24,7 @@ export default {
         value: this.ripple && !this.disabled && { center: true }
       })
       data.on = Object.assign({
-        click: this.toggle
+        click: this.onChange
       }, this.$listeners)
 
       return this.$createElement('div', data)
