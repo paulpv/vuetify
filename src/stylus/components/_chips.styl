@@ -52,7 +52,7 @@ theme(chip, "chip")
   &--selected
     &:not(.chip--disabled)
       border-color: rgba(#000, .13)
-      overflow: hidden
+      // overflow: hidden TEMP
       elevation(2)
 
       &:after
@@ -87,7 +87,7 @@ theme(chip, "chip")
       height: $chip-small-height
       min-width: $chip-small-height
       width: $chip-small-height
-      
+
     .icon
       font-size: $chip-small-font-size
 
@@ -100,7 +100,7 @@ theme(chip, "chip")
     margin: $chip-close-margin
     text-decoration: none
     user-select: none
-    
+
     > .icon
       color: inherit !important
       font-size: 20px
