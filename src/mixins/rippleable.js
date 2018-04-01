@@ -24,7 +24,10 @@ export default {
         value: this.ripple && !this.disabled && { center: true }
       })
       data.on = Object.assign({
-        click: this.onChange
+        click: e => {
+          this.$emit('click', e)
+          this.onChange()
+        }
       }, this.$listeners)
 
       return this.$createElement('div', data)

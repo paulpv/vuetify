@@ -2,7 +2,7 @@
 // import VSelect from '@/components/VSelect'
 
 // test('VSelect - autocomplete', ({ mount }) => {
-//   it.skip('should have -1 tabindex when disabled', () => {
+//   it('should have -1 tabindex when disabled', () => {
 //     const wrapper = mount(VSelect, {
 //       attachToDocument: true,
 //       propsData: {
@@ -30,7 +30,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should have explicit tabindex passed through when not autocomplete', () => {
+//   it('should have explicit tabindex passed through when not autocomplete', () => {
 //     const wrapper = mount(VSelect, {
 //       attachToDocument: true,
 //       propsData: {
@@ -43,7 +43,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should emit search input changes', async () => {
+//   it('should emit search input changes', async () => {
 //     const wrapper = mount(VSelect, {
 //       propsData: {
 //         autocomplete: true
@@ -62,7 +62,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should filter autocomplete search results', () => {
+//   it('should filter autocomplete search results', () => {
 //     const wrapper = mount(VSelect, {
 //       propsData: {
 //         autocomplete: true,
@@ -77,7 +77,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should filter numeric primitives', () => {
+//   it('should filter numeric primitives', () => {
 //     const wrapper = mount(VSelect, {
 //       propsData: {
 //         autocomplete: true,
@@ -92,7 +92,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should activate when search changes and not active', async () => {
+//   it('should activate when search changes and not active', async () => {
 //     const wrapper = mount(VSelect, {
 //       attachToDocument: true,
 //       propsData: {
@@ -131,7 +131,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should render role=combobox correctly when autocomplete', async () => {
+//   it('should render role=combobox correctly when autocomplete', async () => {
 //     const wrapper = mount(VSelect, {
 //       propsData: {
 //         autocomplete: true
@@ -147,7 +147,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should render role=combobox correctly when not autocomplete)', async () => {
+//   it('should render role=combobox correctly when not autocomplete)', async () => {
 //     const wrapper = mount(VSelect)
 
 //     const inputGroup = wrapper.find('.input-group--select')[0]
@@ -175,7 +175,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should not display list with no items and autocomplete', async () => {
+//   it('should not display list with no items and autocomplete', async () => {
 //     const wrapper = mount(VSelect, {
 //       attachToDocument: true,
 //       propsData: {
@@ -233,18 +233,32 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should allow changing of browser autocomplete', () => {
+//   it('should disable browser autocompletion by default', () => {
 //     const wrapper = mount(VSelect, {
 //       attachToDocument: true,
 //       propsData: {
 //         autocomplete: true,
-//         browserAutocomplete: 'off'
 //       }
 //     })
 
 //     const input = wrapper.find('input')[0]
 
 //     expect(input.getAttribute('autocomplete')).toBe('off')
+//     expect('Unable to locate target [data-app]').toHaveBeenTipped()
+//   })
+
+//   it('should allow changing of browser autocomplete', () => {
+//     const wrapper = mount(VSelect, {
+//       attachToDocument: true,
+//       propsData: {
+//         autocomplete: true,
+//         browserAutocomplete: 'on'
+//       }
+//     })
+
+//     const input = wrapper.find('input')[0]
+
+//     expect(input.getAttribute('autocomplete')).toBe('on')
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
@@ -267,7 +281,7 @@
 //     expect('Unable to locate target [data-app]').toHaveBeenTipped()
 //   })
 
-//   it.skip('should not filter text with no items', async () => {
+//   it('should not filter text with no items', async () => {
 //     const wrapper = mount(VSelect, {
 //       attachToDocument: true,
 //       propsData: {
