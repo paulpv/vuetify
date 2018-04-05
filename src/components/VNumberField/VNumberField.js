@@ -85,12 +85,14 @@ export default {
         this.$emit('change', this.lazyValue)
       }
     },
-    value (val) {
-      this.lazyValue = val
+    value: {
+      handler (newValue, oldValue) {
+        this.lazyValue = newValue
 
-      if (this.internalChange) this.internalChange = false
+        if (this.internalChange) this.internalChange = false
 
-      !this.validateOnBlur && this.validate()
+        !this.validateOnBlur && this.validate()
+      }
     }
   },
 
