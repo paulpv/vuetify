@@ -6,8 +6,16 @@ import '../../stylus/components/_text-fields.styl'
 import Colorable from '../../mixins/colorable'
 import Input from '../../mixins/input'
 
+import defaults from './options'
+
 const dirtyTypes = ['color', 'file', 'time', 'date', 'datetime-local', 'week', 'month']
 
+function format (input, opt = defaults) {
+  if (input === undefined || input === null) {
+    return
+  }
+  return input
+  }
 export default {
   name: 'v-number-field',
 
@@ -20,6 +28,8 @@ export default {
 
   data () {
     return {
+      selection: 0,
+      lazySelection: 0,
       initialValue: null,
       inputHeight: null,
       internalChange: false,
@@ -37,9 +47,16 @@ export default {
     },
     fullWidth: Boolean,
     placeholder: String,
-    prefix: String,
-    suffix: String,
-    type: 'text'
+    type: 'text',
+
+    prefix: {
+      type: String,
+      default: () => defaults.prefix
+    },
+    suffix: {
+      type: String,
+      default: () => defaults.suffix
+    },
   },
 
   computed: {
@@ -66,7 +83,7 @@ export default {
       },
       set (val) {
         this.lazyValue = val
-        this.$emit('input', this.lazyValue)
+        this.setSelectionRange()
       }
     },
     isDirty () {
@@ -87,7 +104,16 @@ export default {
     },
     value: {
       handler (newValue, oldValue) {
-        this.lazyValue = newValue
+        if (!this.internalChange) {
+          const formatted = format(newValue, this.$props)
+          this.lazyValue = formatted
+
+          // Emit when the externally set value was modified internally
+          String(newValue) !== this.lazyValue && this.$nextTick(() => {
+            this.$refs.input.value = formatted
+            this.$emit('input', this.lazyValue)
+          })
+        } else this.lazyValue = newValue
 
         if (this.internalChange) this.internalChange = false
 
@@ -101,7 +127,50 @@ export default {
   },
 
   methods: {
+    // BEGIN: Copied from mixins/maskable.js
+    setCaretPosition (selection) {
+      this.selection = selection
+      window.setTimeout(() => {
+        this.$refs.input && this.$refs.input.setSelectionRange(this.selection, this.selection)
+      }, 0)
+    },
+    updateRange () {
+      if (!this.$refs.input) return
+
+      const newValue = format(this.lazyValue, this.$props)
+      let selection = 0
+
+      this.$refs.input.value = newValue
+      if (newValue) {
+        for (let index = 0; index < newValue.length; index++) {
+          if (this.lazySelection <= 0) break
+          this.lazySelection--
+          selection++
+        }
+      }
+
+      this.setCaretPosition(selection)
+      // this.$emit() must occur only when all internal values are correct
+      this.$emit('input', this.lazyValue)
+    },
+    // When the input changes and is
+    // re-created, ensure that the
+    // caret location is correct
+    setSelectionRange () {
+      this.$nextTick(this.updateRange)
+    },
+    resetSelections (input) {
+      if (!input.selectionEnd) return
+      this.selection = input.selectionEnd
+      this.lazySelection = 0
+
+      for (let index = 0; index < this.selection; index++) {
+        this.lazySelection++
+      }
+    },
+    // END: Copied from mixins/maskable.js
     onInput (e) {
+      this.resetSelections(e.target)
       this.inputValue = e.target.value
       this.badInput = e.target.validity && e.target.validity.badInput
     },
@@ -135,9 +204,9 @@ export default {
       delete listeners['change'] // Change should not be bound externally
 
       const data = {
-        style: {},
+        style: { textAlign: 'right' },
         domProps: {
-          value: this.lazyValue
+          value: format(this.lazyValue, this.$props)
         },
         attrs: {
           ...this.$attrs,
