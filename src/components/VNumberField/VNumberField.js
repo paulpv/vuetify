@@ -10,12 +10,6 @@ import defaults from './options'
 
 const dirtyTypes = ['color', 'file', 'time', 'date', 'datetime-local', 'week', 'month']
 
-function format (input, opt = defaults) {
-  if (input === undefined || input === null) {
-    return
-  }
-  return input
-  }
 export default {
   name: 'v-number-field',
 
@@ -105,7 +99,7 @@ export default {
     value: {
       handler (newValue, oldValue) {
         if (!this.internalChange) {
-          const formatted = format(newValue, this.$props)
+          const formatted = this._format(newValue)
           this.lazyValue = formatted
 
           // Emit when the externally set value was modified internally
@@ -137,7 +131,7 @@ export default {
     updateRange () {
       if (!this.$refs.input) return
 
-      const newValue = format(this.lazyValue, this.$props)
+      const newValue = this._format(this.lazyValue)
       let selection = 0
 
       this.$refs.input.value = newValue
@@ -169,6 +163,9 @@ export default {
       }
     },
     // END: Copied from mixins/maskable.js
+    _format (value) {
+      return value
+    },
     onInput (e) {
       this.resetSelections(e.target)
       this.inputValue = e.target.value
@@ -206,7 +203,7 @@ export default {
       const data = {
         style: { textAlign: 'right' },
         domProps: {
-          value: format(this.lazyValue, this.$props)
+          value: this._format(this.lazyValue)
         },
         attrs: {
           ...this.$attrs,
