@@ -8,8 +8,6 @@ import Input from '../../mixins/input'
 
 import defaults from './options'
 
-const dirtyTypes = ['color', 'file', 'time', 'date', 'datetime-local', 'week', 'month']
-
 export default {
   name: 'v-number-field',
 
@@ -22,10 +20,7 @@ export default {
 
   data () {
     return {
-      selection: 0,
-      lazySelection: 0,
       initialValue: null,
-      inputHeight: null,
       internalChange: false,
       badInput: false
     }
@@ -41,7 +36,6 @@ export default {
     },
     fullWidth: Boolean,
     placeholder: String,
-    type: 'text',
 
     prefix: {
       type: String,
@@ -51,6 +45,22 @@ export default {
       type: String,
       default: () => defaults.suffix
     },
+    decimalSeparator: {
+      type: String,
+      default: () => defaults.decimalSeparator
+    },
+    thousandsSeparator: {
+      type: String,
+      default: () => defaults.thousandsSeparator
+    },
+    integerLimit: {
+      type: Number,
+      default: () => defaults.integerLimit
+    },
+    decimalLimit: {
+      type: Number,
+      default: () => defaults.decimalLimit
+    }
   },
 
   computed: {
@@ -77,14 +87,12 @@ export default {
       },
       set (val) {
         this.lazyValue = val
-        this.setSelectionRange()
+        this.$emit('input', this.lazyValue)
       }
     },
     isDirty () {
-      return (this.lazyValue != null &&
-        this.lazyValue.toString().length > 0) ||
-        this.badInput ||
-        dirtyTypes.includes(this.type)
+      return (this.lazyValue != null && this.lazyValue.toString().length > 0) ||
+        this.badInput
     }
   },
 
@@ -92,84 +100,113 @@ export default {
     isFocused (val) {
       if (val) {
         this.initialValue = this.lazyValue
-      } else if (this.initialValue !== this.lazyValue) {
-        this.$emit('change', this.lazyValue)
+      } else {
+        if (this.initialValue !== this.lazyValue) {
+          this.$emit('change', this.lazyValue)
+        }
       }
     },
     value: {
       handler (newValue, oldValue) {
-        if (!this.internalChange) {
-          const formatted = this._format(newValue)
-          this.lazyValue = formatted
+        if (this.internalChange) {
+          this.internalChange = false
+          this.lazyValue = newValue
+        } else {
+          const parsed = this._parse(newValue)
+          this.lazyValue = parsed.toStringed
 
           // Emit when the externally set value was modified internally
-          String(newValue) !== this.lazyValue && this.$nextTick(() => {
-            this.$refs.input.value = formatted
-            this.$emit('input', this.lazyValue)
-          })
-        } else this.lazyValue = newValue
+          if (String(newValue) !== this.lazyValue) {
+            this.$nextTick(() => {
+              this.$refs.input.value = this.lazyValue
+              this.$emit('input', this.lazyValue)
+            })
+          }
+        }
 
-        if (this.internalChange) this.internalChange = false
-
-        !this.validateOnBlur && this.validate()
+        if (!this.validateOnBlur) {
+          this.validate()
+        }
       }
     }
   },
 
   mounted () {
-    this.autofocus && this.focus()
+    if (this.autofocus) {
+      this.focus()
+    }
   },
 
   methods: {
-    // BEGIN: Copied from mixins/maskable.js
-    setCaretPosition (selection) {
-      this.selection = selection
-      window.setTimeout(() => {
-        this.$refs.input && this.$refs.input.setSelectionRange(this.selection, this.selection)
-      }, 0)
+    isNullOrUndefined (value) {
+      return value === null || value === undefined
     },
-    updateRange () {
-      if (!this.$refs.input) return
+    toStr (value) {
+      return this.isNullOrUndefined(value) ? '' : value.toString()
+    },
+    _parse (value) {
+      const original = value
 
-      const newValue = this._format(this.lazyValue)
-      let selection = 0
+      const toStringed = this.toStr(value)
 
-      this.$refs.input.value = newValue
-      if (newValue) {
-        for (let index = 0; index < newValue.length; index++) {
-          if (this.lazySelection <= 0) break
-          this.lazySelection--
-          selection++
+      const {
+        integerLimit,
+        decimalLimit,
+        thousandsSeparator,
+        decimalSeparator
+      } = this.$props
+
+      const parts = toStringed.split(decimalSeparator)
+      const integerPart = parts[0]
+      const decimalPart = parts[1]
+
+      return {
+        original,
+        toStringed,
+        integerLimit,
+        decimalLimit,
+        thousandsSeparator,
+        decimalSeparator,
+        integerPart,
+        integerLength: integerPart && integerPart.length,
+        containsDecimal: parts.length > 1,
+        decimalPart,
+        decimalLength: decimalPart && decimalPart.length
+      }
+    },
+    cancelEvent (e) {
+      e.preventDefault()
+    },
+    onInput (e) {
+      const key = e.data
+      const target = e.target
+      let targetValue = target.value
+      let selectionStart = target.selectionStart
+      const lazyValue = this.lazyValue
+
+      const parsed = this._parse(targetValue)
+      if (parsed.containsDecimal && selectionStart > parsed.integerLength) {
+        if (parsed.decimalLength > parsed.decimalLimit) {
+          this.$nextTick(() => {
+            this.$refs.input.value = lazyValue
+          })
+          this.cancelEvent(e)
+          return
+        }
+      } else {
+        if (parsed.integerLength > parsed.integerLimit) {
+          if (key !== parsed.decimalSeparator) {
+            this.$nextTick(() => {
+              this.$refs.input.value = lazyValue
+            })
+            this.cancelEvent(e)
+            return
+          }
         }
       }
 
-      this.setCaretPosition(selection)
-      // this.$emit() must occur only when all internal values are correct
-      this.$emit('input', this.lazyValue)
-    },
-    // When the input changes and is
-    // re-created, ensure that the
-    // caret location is correct
-    setSelectionRange () {
-      this.$nextTick(this.updateRange)
-    },
-    resetSelections (input) {
-      if (!input.selectionEnd) return
-      this.selection = input.selectionEnd
-      this.lazySelection = 0
-
-      for (let index = 0; index < this.selection; index++) {
-        this.lazySelection++
-      }
-    },
-    // END: Copied from mixins/maskable.js
-    _format (value) {
-      return value
-    },
-    onInput (e) {
-      this.resetSelections(e.target)
-      this.inputValue = e.target.value
-      this.badInput = e.target.validity && e.target.validity.badInput
+      this.inputValue = parsed.toStringed
+      this.badInput = target.validity && target.validity.badInput
     },
     blur (e) {
       this.isFocused = false
@@ -203,7 +240,7 @@ export default {
       const data = {
         style: { textAlign: 'right' },
         domProps: {
-          value: this._format(this.lazyValue)
+          value: this._parse(this.lazyValue).toStringed
         },
         attrs: {
           ...this.$attrs,
@@ -225,7 +262,8 @@ export default {
 
       if (this.placeholder) data.attrs.placeholder = this.placeholder
 
-      data.attrs.type = this.type
+      data.attrs.type = 'text'
+      data.attrs.inputmode = 'decimal'
 
       const children = [this.$createElement(tag, data)]
 
