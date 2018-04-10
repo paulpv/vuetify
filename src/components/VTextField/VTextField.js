@@ -104,6 +104,7 @@ export default {
         return this.lazyValue
       },
       set (val) {
+        // console.log('inputValue set val', val)
         if (this.mask) {
           this.lazyValue = this.unmaskText(this.maskText(this.unmaskText(val)))
           this.setSelectionRange()
@@ -132,6 +133,7 @@ export default {
 
   watch: {
     isFocused (val) {
+      // console.log('watch isFocused val', val)
       if (val) {
         this.initialValue = this.lazyValue
       } else if (this.initialValue !== this.lazyValue) {
@@ -139,16 +141,24 @@ export default {
       }
     },
     value (val) {
+      // console.log('watch value val', val)
       if (this.mask && !this.internalChange) {
+        // console.log('watch value external change')
         const masked = this.maskText(this.unmaskText(val))
         this.lazyValue = this.unmaskText(masked)
 
         // Emit when the externally set value was modified internally
-        String(val) !== this.lazyValue && this.$nextTick(() => {
-          this.$refs.input.value = masked
-          this.$emit('input', this.lazyValue)
-        })
-      } else this.lazyValue = val
+        if (String(val) !== this.lazyValue) {
+          // console.log('watch value changed')
+          this.$nextTick(() => {
+            this.$refs.input.value = masked
+            this.$emit('input', this.lazyValue)
+          })
+        }
+      } else {
+        // console.log('watch value internal change')
+        this.lazyValue = val
+      }
 
       if (this.internalChange) this.internalChange = false
 
@@ -175,12 +185,14 @@ export default {
       })
     },
     onInput (e) {
+      // console.log('onInput e', e)
       this.mask && this.resetSelections(e.target)
       this.inputValue = e.target.value
       this.badInput = e.target.validity && e.target.validity.badInput
       this.shouldAutoGrow && this.calculateInputHeight()
     },
     blur (e) {
+      // console.log('blur e', e)
       this.isFocused = false
       // Reset internalChange state
       // to allow external change
@@ -193,6 +205,7 @@ export default {
       this.$emit('blur', e)
     },
     focus (e) {
+      // console.log('focus e', e)
       if (!this.$refs.input) return
 
       this.isFocused = true
@@ -202,6 +215,7 @@ export default {
       this.$emit('focus', e)
     },
     keyDown (e) {
+      // console.log('keyDown e', e)
       // Prevents closing of a
       // dialog when pressing
       // enter
@@ -223,15 +237,17 @@ export default {
       }, this.count)
     },
     genInput () {
+      // console.log('genInput')
       const tag = this.isTextarea ? 'textarea' : 'input'
       const listeners = Object.assign({}, this.$listeners)
       delete listeners['change'] // Change should not be bound externally
 
+      const value = this.maskText(this.lazyValue)
+      // console.log('getInput value', value)
+
       const data = {
         style: {},
-        domProps: {
-          value: this.maskText(this.lazyValue)
-        },
+        domProps: { value },
         attrs: {
           ...this.$attrs,
           autofocus: this.autofocus,
@@ -274,17 +290,20 @@ export default {
       return children
     },
     genFix (type) {
+      // console.log('genFix type', type)
       return this.$createElement('span', {
         'class': `input-group--text-field__${type}`
       }, this[type])
     },
     clearableCallback () {
+      // console.log('clearableCallback')
       this.inputValue = null
       this.$nextTick(() => this.$refs.input.focus())
     }
   },
 
   render () {
+    // console.log('render arguments', arguments)
     return this.genInputGroup(this.genInput(), { attrs: { tabindex: false } })
   }
 }

@@ -86,6 +86,7 @@ export default {
         return this.lazyValue
       },
       set (val) {
+        // console.log('inputValue set val', val)
         this.lazyValue = val
         this.$emit('input', this.lazyValue)
       }
@@ -98,6 +99,7 @@ export default {
 
   watch: {
     isFocused (val) {
+      // console.log('watch isFocused val', val)
       if (val) {
         this.initialValue = this.lazyValue
       } else {
@@ -108,19 +110,27 @@ export default {
     },
     value: {
       handler (newValue, oldValue) {
+        // console.log('watch value newValue', newValue)
         if (this.internalChange) {
-          this.internalChange = false
+          // console.log('watch value internal change')
           this.lazyValue = newValue
+          this.internalChange = false
         } else {
-          const parsed = this._parse(newValue)
-          this.lazyValue = parsed.toStringed
+          // console.log('watch value external change')
+          const parsed = this._parse('watch value', newValue)
+          // console.log('watch value parsed', JSON.stringify(parsed))
+          const cleaned = parsed.cleaned
+          this.lazyValue = cleaned
 
           // Emit when the externally set value was modified internally
           if (String(newValue) !== this.lazyValue) {
+            // console.log('watch value changed')
             this.$nextTick(() => {
-              this.$refs.input.value = this.lazyValue
+              this.$refs.input.value = cleaned
               this.$emit('input', this.lazyValue)
             })
+          } else {
+            // console.log('watch value unchanged')
           }
         }
 
@@ -132,22 +142,24 @@ export default {
   },
 
   mounted () {
+    // console.log('mounted')
     if (this.autofocus) {
       this.focus()
     }
   },
 
   methods: {
-    isNullOrUndefined (value) {
-      return value === null || value === undefined
+    regexEscape (value) {
+      // Per https://stackoverflow.com/a/3561711/252308
+      return value.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
     },
-    toStr (value) {
-      return this.isNullOrUndefined(value) ? '' : value.toString()
-    },
-    _parse (value) {
-      const original = value
+    // eslint-disable-next-line max-statements
+    _parse (caller, value) {
+      // console.log('_parser caller', caller, 'value', value)
 
-      const toStringed = this.toStr(value)
+      value = (value === null || value === undefined) ? '' : value.toString().trim()
+
+      const original = value
 
       const {
         integerLimit,
@@ -156,59 +168,155 @@ export default {
         decimalSeparator
       } = this.$props
 
-      const parts = toStringed.split(decimalSeparator)
+      const escapedDecimalSeparator = this.regexEscape(decimalSeparator)
+
+      let regexpNonNumericCharacters
+      if (integerLimit > 3) {
+        const escapedThousandsSeparator = this.regexEscape(thousandsSeparator)
+
+        const regexpDuplicateThousandsSeparator = new RegExp(escapedThousandsSeparator + escapedThousandsSeparator + '+', 'g')
+        // console.log('_clean regexpDuplicateThousandsSeparator', regexpDuplicateThousandsSeparator)
+        value = value.replace(regexpDuplicateThousandsSeparator, thousandsSeparator)
+        // console.log('_clean value', value)
+
+        regexpNonNumericCharacters = new RegExp('[^0-9' + escapedThousandsSeparator + escapedDecimalSeparator + ']', 'g')
+      } else {
+        regexpNonNumericCharacters = new RegExp('[^0-9' + escapedDecimalSeparator + ']', 'g')
+      }
+      // console.log('_clean regexpNonNumericCharacters', regexpNonNumericCharacters)
+
+      const regexpDuplicateDecimalSeparator = new RegExp(escapedDecimalSeparator + escapedDecimalSeparator + '+', 'g')
+      // console.log('_clean regexpDuplicateDecimalSeparator', regexpDuplicateDecimalSeparator)
+
+      value = value.replace(regexpNonNumericCharacters, '')
+      // console.log('_clean value', value)
+
+      value = value.replace(regexpDuplicateDecimalSeparator, decimalSeparator)
+      // console.log('_clean value', value)
+
+      const parts = value.split(decimalSeparator)
+      // console.log('_clean parts', parts)
       const integerPart = parts[0]
-      const decimalPart = parts[1]
+      const integerLength = integerPart.length
+      let cleaned = integerPart
+      let decimalPart = ''
+      let containsDecimal
+      if (parts.length > 1) {
+        containsDecimal = true
+        cleaned += decimalSeparator
+        for (let i = 1; i < parts.length; i++) {
+          const part = parts[i]
+          if (part.length) {
+            decimalPart += part
+          }
+        }
+        cleaned += decimalPart
+      } else {
+        containsDecimal = false
+      }
+      // console.log('_parse cleaned', cleaned)
+      const decimalLength = decimalPart.length
 
       return {
         original,
-        toStringed,
+        cleaned,
         integerLimit,
         decimalLimit,
         thousandsSeparator,
         decimalSeparator,
         integerPart,
-        integerLength: integerPart && integerPart.length,
-        containsDecimal: parts.length > 1,
+        integerLength,
+        containsDecimal,
         decimalPart,
-        decimalLength: decimalPart && decimalPart.length
+        decimalLength
       }
     },
-    cancelEvent (e) {
+    cancelEvent (e, value) {
+      // console.warn('cancelEvent')
+      if (value) {
+        this.$nextTick(() => {
+          this.$refs.input.value = value
+        })
+      }
       e.preventDefault()
     },
     onInput (e) {
-      const key = e.data
+      // console.log('onInput e', e)
       const target = e.target
       let targetValue = target.value
-      let selectionStart = target.selectionStart
-      const lazyValue = this.lazyValue
 
-      const parsed = this._parse(targetValue)
-      if (parsed.containsDecimal && selectionStart > parsed.integerLength) {
-        if (parsed.decimalLength > parsed.decimalLimit) {
-          this.$nextTick(() => {
-            this.$refs.input.value = lazyValue
-          })
-          this.cancelEvent(e)
-          return
+      const key = e.data
+      // console.log('onInput e.data', key, 'e.target.value', targetValue)
+      let selectionStart = target.selectionStart
+      // let selectionEnd = target.selectionEnd
+      // console.log('onInput selectionStart', selectionStart, 'selectionEnd', selectionEnd)
+      // console.log('onInput this.value', this.value, 'this.lazyValue', this.lazyValue, typeof this.lazyValue)
+
+      const valueOld = this.lazyValue
+      // console.log('onInput valueOld', valueOld)
+      // const selection = this.selection
+      // console.log('onInput this.selection', selection, 'this.lazySelection', this.lazySelection)
+
+      const parsed = this._parse('onInput', targetValue)
+      // console.log('onInput parsed', JSON.stringify(parsed))
+      const valueNew = parsed.cleaned
+      // console.log('onInput valueNew', valueNew)
+
+      if (valueNew.length) {
+        // console.log('onInput A')
+        if (parsed.containsDecimal && selectionStart > parsed.integerLength) {
+          // console.log('onInput A.A')
+          // console.log('onInput decimal part')
+          if (parsed.decimalLength > parsed.decimalLimit) {
+            // console.log('onInput A.A.A')
+            this.cancelEvent(e, valueOld)
+            return
+          } else {
+            // console.log('onInput A.A.B')
+          }
+        } else {
+          // console.log('onInput A.B')
+          // console.log('onInput integer part')
+          if (parsed.integerLength > parsed.integerLimit) {
+            // console.log('onInput A.B.A')
+            if (key !== parsed.decimalSeparator) {
+              // console.log('onInput A.B.A.A')
+              this.cancelEvent(e, valueOld)
+              return
+            } else {
+              // console.log('onInput A.B.A.B')
+            }
+          } else {
+            // console.log('onInput A.B.B')
+          }
         }
       } else {
-        if (parsed.integerLength > parsed.integerLimit) {
-          if (key !== parsed.decimalSeparator) {
-            this.$nextTick(() => {
-              this.$refs.input.value = lazyValue
-            })
-            this.cancelEvent(e)
-            return
-          }
+        // console.log('onInput B')
+        if (parsed.original.length) {
+          // console.log('onInput B.A')
+          //
+          // The new value couldn't be parsed to a number; restore valueOld
+          //
+          this.cancelEvent(e, valueOld)
+          return
+        } else {
+          // console.log('onInput B.B')
         }
       }
 
-      this.inputValue = parsed.toStringed
+      if (valueNew === valueOld) {
+        // console.log('onInput unchanged')
+        this.cancelEvent(e, valueOld)
+        return
+      } else {
+        // console.log('onInput changed')
+      }
+
+      this.inputValue = valueNew
       this.badInput = target.validity && target.validity.badInput
     },
     blur (e) {
+      // console.log('blur e', e)
       this.isFocused = false
       // Reset internalChange state
       // to allow external change
@@ -221,6 +329,7 @@ export default {
       this.$emit('blur', e)
     },
     focus (e) {
+      // console.log('focus e', e)
       if (!this.$refs.input) return
 
       this.isFocused = true
@@ -230,18 +339,21 @@ export default {
       this.$emit('focus', e)
     },
     keyDown (e) {
+      // console.log('keyDown e', e)
       this.internalChange = true
     },
     genInput () {
+      // console.log('genInput')
       const tag = 'input'
       const listeners = Object.assign({}, this.$listeners)
       delete listeners['change'] // Change should not be bound externally
 
+      const value = this._parse('genInput', this.lazyValue).cleaned
+      // console.log('getInput value', value)
+
       const data = {
         style: { textAlign: 'right' },
-        domProps: {
-          value: this._parse(this.lazyValue).toStringed
-        },
+        domProps: { value },
         attrs: {
           ...this.$attrs,
           autofocus: this.autofocus,
@@ -273,17 +385,20 @@ export default {
       return children
     },
     genFix (type) {
+      // console.log('genFix type', type)
       return this.$createElement('span', {
         'class': `input-group--text-field__${type}`
       }, this[type])
     },
     clearableCallback () {
+      // console.log('clearableCallback')
       this.inputValue = null
       this.$nextTick(() => this.$refs.input.focus())
     }
   },
 
   render () {
+    // console.log('render arguments', arguments)
     return this.genInputGroup(this.genInput(), { attrs: { tabindex: false } })
   }
 }
