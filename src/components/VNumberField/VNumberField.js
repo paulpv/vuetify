@@ -1,3 +1,4 @@
+
 // Styles
 import '../../stylus/components/_input-groups.styl'
 import '../../stylus/components/_text-fields.styl'
@@ -109,7 +110,7 @@ export default {
       }
     },
     value: {
-      handler (newValue, oldValue) {
+      handler (newValue) {
         // console.log('watch value newValue', newValue)
         if (this.internalChange) {
           // console.log('watch value internal change')
@@ -232,8 +233,8 @@ export default {
       }
     },
     cancelEvent (e, value) {
-      // console.warn('cancelEvent')
-      if (value) {
+      // console.warn('cancelEvent value', value)
+      if (value !== undefined) {
         this.$nextTick(() => {
           this.$refs.input.value = value
         })
@@ -338,7 +339,7 @@ export default {
       }
       this.$emit('focus', e)
     },
-    keyDown (e) {
+    keyDown () {
       // console.log('keyDown e', e)
       this.internalChange = true
     },
@@ -352,8 +353,12 @@ export default {
       // console.log('getInput value', value)
 
       const data = {
-        style: { textAlign: 'right' },
-        domProps: { value },
+        style: {
+          textAlign: 'right'
+        },
+        domProps: {
+          value
+        },
         attrs: {
           ...this.$attrs,
           autofocus: this.autofocus,
