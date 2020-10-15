@@ -1,90 +1,117 @@
 # Backers
 
-You can join them in supporting Vuetify.js by [pledging on Patreon](https://www.patreon.com/vuetify)
+You can join them in supporting Vuetify by [sponsoring through Github](https://github.com/sponsors/johnleider)
 
-### $500+
+### Premiere
+- [QOMPLX](https://www.qomplx.com/)
+
+### Diamond
 - [LMAX Exchange](https://www.lmax.com/)
 - [Intygrate](http://intygrate.com/)
-- [Resale AI](http://resaleai.com/)
+- [Vue Mastery](http://vuemastery.com/)
+- [Skale Technologies](http://www.skaletech.com/)
+- [Crossword Solver](http://crossword-solver.io/)
 
-### $250+
-- [Eikos Partners](http://www.eikospartners.com/)
-- [rateGenius](https://application.rategenius.com/)
-- [quitt](https://quitt.ch/)
-- [Clearblue Technologies](http://www.clearbluetechnologies.com/)
+### Platinum
+- [rateGenius](https://application.rategenius.com/) <!-- Ravi Alamuri -->
+- [DigitalMaas](https://www.digitalmaas.com/) <!-- Scott Francis -->
+- [Quanted Square](https://analytics.quantedsquare.com/)
+- [Hype](https://www.hypeinnovation.com/home)
+- [Cosmic](https://www.cosmicjs.com/)
+- [Ekorre](https://ekorre.hr/)
+- [Dealer Desk](https://www.dealerdesk.de/)
 
-### $100+
-- [Anthony Gherghetta](https://gorilladash.com/)
-
-### $50+
+### Gold
 - [Xavier Escoté](http://www.deister.net/)
-- [Steve Gehrman](https://cocoatech.com/)
-- [Cycloid](https://www.cycloid.io/)
-- [LiveCasino](https://livecasino.com/) <!-- Vidar hwang -->
-- [Nate Controls](http://www.natecontrols.com/) <!-- Brad Stewart -->
 - [Zweidenker](http://zweidenker.de) <!-- Christian Denker -->
 - [Software IDM](https://softwareidm.com/) <!-- Peter Sidebotham -->
+- [Hohenstein Laboratories](https://www.hohenstein.de/en/home/home.xhtml)
+- [P2L Technologies](https://p2l.tech/) <!-- Blaise Laflamme -->
+- [madhead](https://www.madhead.com/) <!-- Terence Tsang -->
+- [Elfo s.r.l.](https://www.elfo.net/)
+- [Codefirst](https://www.codefirst.co.uk/)
+- [customessaymeister](https://www.customessaymeister.com/)
+- [blokt](https://blokt.com/)
+- [Loomio](https://www.loomio.org/)
+- Hannes Kochniß
+- [EduBirdie](https://edubirdie.com/)
+- [Toolio](https://www.toolio.com/)
+- [JSDevJobs](https://jsdevjobs.com/)
+- [Skale Technologies](http://www.skaletech.com/)
+- [NoteRiot](https://note.riot.ai/)
+- [EduBirdie](https://edubirdie.com/)
+- [ClothingRIC](https://www.clothingric.com/)
 
 ### $20+
-- [Jaime Olmo](https://www.jaimeolmo.com)
-- Michael Marti
-- [Aeroden](https://www.aeroden.com) <!-- Adrian Belovic -->
-- Sam Mitchell
-- David Hess
-- Jay Blanchard
-- Christo Crampton
-- Team Of Monkeys
-- Robin Paolini
-- [Integra CCS](https://www.integraccs.com/)
-- Joel Hatch
-- Pierre Vanhulst
-- David Briscese
-- Juha Vehnia
-- Max Hodges
+- pjcunningham
+- malkhuzayyim
+- chewy94
+- austinginder
+- busseyl
+- Phlow2001
+- SIDNEI LUIZ BAUMGARTENN
+- Brad Stewart
+- Kyle Lawhorn
+- Working Group Two
 - Kent Johnson
-- Ionut Galita
+- Juha Vehnia
+- Joel Hatch
+- Robin Paolini
+- Christo Crampton
 
 ### $10+
-- Kevin Pilard
-- Espen Bratberg
-- Ivan Vedernikov
-- Chava Sobreyra
-- Costa Huang
-- Paul
-- Jordan Wood
-- Alexey Toroshchin
-- Phillippe Genois
-- Sam Bosell
-- Cliff Hess
-- Omar Spira
-- Jiří Žižka
-- Dejan Kovac
-- Anythony Estebe
-- Luis F Rocha
-- Eeico Wentrup
-- Chris Britton
-- Matthew O'Leary
-- Mike Margerum
-- Reto Aebersold
-- Mark Freedman
-- Fernando Rosentalski Neto
-- Eric Nguyen
-- Alvin Wang
-- Jadranko Dragoje
-- Charles McKeever
-- Caleb B
-- Stanislovas Janonis
-- Jamie Sartell
-- Brandon Deo
-- Idea Junction Ltd.
-- Michael Hipp
-- Keyur Desai
-- Casey Dwyer
-- King of Kings
+- centerorbit
+- ivelin
+- cloudwizard
+- isokosan
+- jraller
+- ikedaosushi
+- mantis
+- flipvh
+- [quickytools](https://www.quickytools.com) <!-- hueachilles -->
+- J-Sek
+- erichelgeson
+- dylancopeland
+- P4sca1
+- harrisonleong
+- blalan05
+- cebartling
+- MarkFreedman
+- shuogawa
+- DRoet
+- dantrevino
+- appurist
+- wallslide
+- MichaelHipp
+- margerum
+- morphatic
+- bjorkgard
+- pacific202
+- borisdayma
+- jillztom
+- goeh
+- bdeo
+- Mark Couvaras
+- Esteban Miguel
+- Bert Garza
+- fanvyr
+- Jonty Brook
+- Daniel Chote
 - Bohdan Kokotko
-- Blaine Landowski
-- Paul Whittemore
-- Abdelkarim Mateos
-- Alexander Weiher
+- Erik Vavro
+- Salty Fish
+- Quintin Donnell henry
+- Christian Burkhart
+- Stephen Elliot
+- Jaeyoung Lee
+- Adam Kaput
+- Harold Bruton
+- James Chang
+- Pierre Vanhulst
 - Helmi
-- Phillipp Naderer-Puiu
+- Idea Junction Ltd.
+- Anthony Estebe
+- Sam Bosell
+- Philippe Genois
+- Costa Huang
+- Chava Sobreyra

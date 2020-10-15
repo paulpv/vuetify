@@ -1,0 +1,26 @@
+{
+  "name": "@vuetify/api-generator",
+  "version": "2.3.10",
+  "private": true,
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "debug": "babel-node inspect src/index.js",
+    "dev": "node src/index.js",
+    "build": "node src/export.js",
+    "lint": "eslint --ext .js src -f codeframe --max-warnings 0",
+    "lint:fix": "yarn lint --fix"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "deepmerge": "^4.0.0",
+    "rimraf": "^3.0.2",
+    "vue": "^2.6.11",
+    "vuetify": "^2.3.10"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5"
+  }
+}
